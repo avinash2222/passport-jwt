@@ -4,8 +4,9 @@ var app                         = express();
 var helmet                      = require('helmet');
 var mongoose                    = require('mongoose');
 var bodyParser                  = require('body-parser');
+var roleRouter                  = require('./routes/role');
 var index                       = require('./routes/index');
-var usersRouter                 = require('./routes/users');
+var usersRouter                 = require('./routes/user');
 var commonLogin                 = require('./routes/commonLogin');
 
 
@@ -28,14 +29,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Routes
 
 app.use('/', index);
+app.use('/role', roleRouter);
 app.use('/user', usersRouter);
+app.use('/commonLogin', commonLogin);
 
 const PORT = process.env.PORT || 3000;
 
 //connectig to mongoDB
 mongoose.Promise = global.Promise;
 (function connect() {
-    mongoose.connect(process.env.mongodbString, { useMongoClient:true })
+    mongoose.connect(process.env.mongodbString, { useNewUrlParser: true })
     .then (
       () => { console.log("Connected to Mongodb Successfull"); },
       err => { return err ;}

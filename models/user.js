@@ -6,13 +6,12 @@ const JWT = require('jsonwebtoken');
 
 var address = new Schema({
     email : {
-        type : String
-    },
-    phone_number : {
-        type : Number
+        type : String,
+        trim: true
     },
     secondary_phone_number : {
-        type : Number
+        type : Number,
+        trim: true
     },
     state : {
         type : String
@@ -21,7 +20,8 @@ var address = new Schema({
         type : String
     },
     pincode : {
-        type : Number
+        type : Number,
+        trim: true
     },
     locality : {
         type : String
@@ -36,17 +36,21 @@ var address = new Schema({
 
 
 var newSchema = new Schema({
-    userid : {
-        type : String,
+    phone_number : {
+        type : Number,
         required:true,
+        trim : true,
         unique : true
     },
     first_name : {
-        type : String
+        type : String,
+        required : true,
+        trim: true
     },
     last_name : {
         type : String,
-        required : true
+        required : true,
+        trim: true   
     }, 
     organisation : {
         type : String
@@ -55,19 +59,24 @@ var newSchema = new Schema({
         type : String
     },
     notes : {
-        type : String
+        type : String,
+        trim : true
     },
     active : {
         type : Boolean,
     },
-    address : {address},
+    address : address,
     password : {
         type : String,
+        trim : true,
         required : true
     },
     image : { 
         type : String,
         //required:true
+    },
+    role : {
+        type : String
     }
   },{
   timestamps : true
@@ -90,7 +99,7 @@ newSchema.statics.hashPwd = function (req, res, next) {
 
 newSchema.statics.signToken = newUser => {
     return JWT.sign({
-        // role : newUser.role,
+        role : newUser.role,
         // mobile : newUser.phoneNumber,
         userid : newUser.userid,
         iss : 'omniwyse',
@@ -102,4 +111,4 @@ newSchema.statics.signToken = newUser => {
 
 
 
-module.exports = mongoose.model("Pujari",newSchema);
+module.exports = mongoose.model("User",newSchema);

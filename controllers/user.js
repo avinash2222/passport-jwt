@@ -5,21 +5,21 @@ function UserController(){
 
 
 //Create User
-UserController.prototype.create =(req, res, next) => {
+UserController.prototype.createUser =(req, res, next) => {
     if (!req.body) {
         return res.status(400).send({
             message: "Details could not be empty"
         });
     } else {
         const {...data} = req.body;
-        const {first_name, last_name, phone_number, password, email} = data;
-        // const role = "user";
-        User.findOne({email})
+        const {phone_number, first_name, last_name, password, email, role} = data;
+
+        User.findOne({phone_number})
             .then(emp => {
                 if (emp) {
-                    res.status(409).send({message : "Email is in use"});
+                    res.status(409).send({message : "user already exist!"});
                 } else {
-                    const user = new User({first_name, last_name, phone_number, password, email});
+                    const user = new User({phone_number, first_name, last_name, password, 'address.email':email, role});
                     user.save()
                         .then(data => {
                             res.status(200).send({message : "registration successfull!"});
@@ -41,9 +41,11 @@ UserController.prototype.create =(req, res, next) => {
 
 //Retrive  All Users
 UserController.prototype.findAll = (req, res) => {
-    User.find()
-    .then(emp => {
-        res.send(emp);
+    var permission = req.permission; //all granted permissions
+    User.find().lean()
+    .then(raw => {
+        raw = JSON.parse(JSON.stringify(raw)); 
+        res.status(200).send(permission.filter(raw));
     }).catch(err => {
         console.error("Details are Not retrived", err.message);
         res.status(500).send({
@@ -76,8 +78,8 @@ UserController.prototype.findOne = (req, res) => {
 //Update user
 UserController.prototype.update = (req, res) => {
     const {_id} = req.params;
-    const {first_name, last_name, phone_number, password, email} = req.body;
-    User.findOneAndUpdate({_id},{first_name : first_name, last_name : last_name, phone_number : phone_number, password : password, email : email}, {new : true})
+    const {phone_number, first_name, last_name, password, email} = req.body;
+    User.findOneAndUpdate({_id},{phone_number : phone_number, first_name : first_name, last_name : last_name, password : password, email : email}, {new : true})
     .then(emp => {
         if(!emp) {
             res.status(500).send({
