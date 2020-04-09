@@ -38,18 +38,18 @@ var address = new Schema({
 var newSchema = new Schema({
     phone_number : {
         type : Number,
-        required:true,
+        required:"enter phone no",
         trim : true,
         unique : true
     },
     first_name : {
         type : String,
-        required : true,
+        required : "enter first name",
         trim: true
     },
     last_name : {
         type : String,
-        required : true,
+        required : "enter last name",
         trim: true   
     }, 
     organisation : {
@@ -69,15 +69,18 @@ var newSchema = new Schema({
     password : {
         type : String,
         trim : true,
-        required : true
+        required : "enter password"
     },
     image : { 
         type : String,
         //required:true
     },
-    role : {
-        type : String
-    }
+    role: {
+        type: String,
+        enum : ['user', 'operator', 'admin'],
+        default: 'user',
+        required: 'Specify user type',
+    },
   },{
   timestamps : true
   },{
