@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
+var passportLocalMongoose = require('passport-local-mongoose');
 
 var address = new Schema({
     email : {
@@ -38,18 +39,24 @@ var address = new Schema({
 var newSchema = new Schema({
     phone_number : {
         type : Number,
-        required:"enter phone no",
+        // required:"enter phone no",
         trim : true,
-        unique : true
+        // unique : true
     },
+    // username automatically added by passport-local-mongoose plugin
+    // username : {
+    //     type : String,
+    //     trim : true
+    // },
     first_name : {
         type : String,
-        required : "enter first name",
+        // required : "enter first name",
         trim: true
     },
+    facebookId : String,
     last_name : {
         type : String,
-        required : "enter last name",
+        // required : "enter last name",
         trim: true   
     }, 
     organisation : {
@@ -66,11 +73,12 @@ var newSchema = new Schema({
         type : Boolean,
     },
     address : address,
-    password : {
-        type : String,
-        trim : true,
-        required : "enter password"
-    },
+    // password automatically added by passport-local-mongoose plugin
+    // password : {
+    //     type : String,
+    //     trim : true,
+    //     required : "enter password"
+    // },
     image : { 
         type : String,
         //required:true
@@ -113,5 +121,6 @@ newSchema.statics.signToken = newUser => {
 };
 
 
+newSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("User",newSchema);

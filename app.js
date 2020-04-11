@@ -2,6 +2,7 @@ var path                        = require('path');
 var express                     = require('express');
 var app                         = express();
 var helmet                      = require('helmet');
+var passport                    = require('passport');
 var mongoose                    = require('mongoose');
 var bodyParser                  = require('body-parser');
 var roleRouter                  = require('./routes/role');
@@ -9,25 +10,24 @@ var index                       = require('./routes/index');
 var usersRouter                 = require('./routes/user');
 var commonLogin                 = require('./routes/commonLogin');
 
-
-
 //set environment variable
 require('dotenv').config();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 
+
 //use middleware
 app.use(helmet());
 app.use(express.json());
 app.use(bodyParser.json());
 app.set('view engine', 'jade');
+app.use(passport.initialize());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 //Routes
-
 app.use('/', index);
 app.use('/role', roleRouter);
 app.use('/user', usersRouter);

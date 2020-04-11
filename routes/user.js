@@ -3,31 +3,51 @@ var router = express.Router();
 const verify=require('../Authentication/verifyToken');
 var UserController = require('../controllers/user');
 const User = require('../models/user');
+var passport = require('passport');
+var authenticate = require('../Authentication/authenticate');
+
+// login using passport-jwt
+router.post('/login', passport.authenticate('local'), (req, res) => {
+
+  var token = authenticate.getToken({_id: req.user._id});
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.json({success: true, token: token, status: 'You are successfully logged in!'});
+});
+
+// signup using passport-jwt
+router.post('/signup', (req, res, next) => {
+  User.register(new User({username: req.body.username}), 
+    req.body.password, (err, user) => {
+    if(err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({err: err});
+    }
+    else {
+      passport.authenticate('local')(req, res, () => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, status: 'Registration Successful!'});
+      });
+    }
+  });
+});
 
 
-// Create a new user
-router.post('/register', User.hashPwd, UserController.createUser);
+// router.post('/register', User.hashPwd, UserController.createUser);
 
 // Retrieve All users
-router.get('/details', verify.allowIfLoggedin, verify.grantAccess('readAny', 'profile'), UserController.findAll);
+router.get('/details', authenticate.verifyUser, UserController.findAll);
 
 // Retrieve a single user with phoneNumber
-router.get('/:_id', verify.allowIfLoggedin, verify.grantAccess('readOwn', 'profile'), UserController.findOne);
+router.get('/:_id', authenticate.verifyUser,  UserController.findOne);
 
 // Update an user with phoneNumber
-router.put('/:_id', verify.allowIfLoggedin, verify.grantAccess('updateOwn', 'profile'), UserController.update);
+router.put('/:_id', verify.allowIfLoggedin,  UserController.update);
 
 // Delete a user with phoneNumber
-router.delete('/:_id', verify.allowIfLoggedin, verify.grantAccess('deleteOwn', 'profile'), UserController.delete);
+router.delete('/:_id', verify.allowIfLoggedin,  UserController.delete);
 
 
 module.exports = router;
-
-//try theses access methods
-// userController.grantAccess('readOwn', 'profile');
-// userController.grantAccess('readAny', 'profile');
-// userController.grantAccess('updateAny', 'profile');
-// userController.grantAccess('deleteAny', 'profile');
-
-//create indexing for faster search
-// >>db.users.ensureIndex({'address.email':1});

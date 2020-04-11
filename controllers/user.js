@@ -41,11 +41,9 @@ UserController.prototype.createUser =(req, res, next) => {
 
 //Retrive  All Users
 UserController.prototype.findAll = (req, res) => {
-    var permission = req.permission; //all granted permissions
     User.find().lean()
     .then(raw => {
-        raw = JSON.parse(JSON.stringify(raw)); 
-        res.status(200).send(permission.filter(raw));
+        res.status(200).send(raw);
     }).catch(err => {
         console.error("Details are Not retrived", err.message);
         res.status(500).send({
