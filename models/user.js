@@ -95,30 +95,30 @@ var newSchema = new Schema({
     versionKey: false
 });
 
-newSchema.statics.hashPwd = function (req, res, next) {
-    const saltRounds = 10;
-    bcrypt.hash(req.body.password, saltRounds)
-    .then(function(hash) {
-        req.body.password = hash;
-        next();
-    }).catch(err => {
-        res.status(500).send({
-            message: `Error:${err.message}`
-            });
-        });
-};
+// newSchema.statics.hashPwd = function (req, res, next) {
+//     const saltRounds = 10;
+//     bcrypt.hash(req.body.password, saltRounds)
+//     .then(function(hash) {
+//         req.body.password = hash;
+//         next();
+//     }).catch(err => {
+//         res.status(500).send({
+//             message: `Error:${err.message}`
+//             });
+//         });
+// };
 
-newSchema.statics.signToken = newUser => {
-    return JWT.sign({
-        role : newUser.role,
-        // mobile : newUser.phoneNumber,
-        userid : newUser.userid,
-        iss : 'omniwyse',
-        sub : newUser.id,
-        iat : new Date().getTime(),
-        exp : new Date().setDate(new Date().getDate()+1)
-    },process.env.JWT_SECRET);
-};
+// newSchema.statics.signToken = newUser => {
+//     return JWT.sign({
+//         role : newUser.role,
+//         // mobile : newUser.phoneNumber,
+//         userid : newUser.userid,
+//         iss : 'omniwyse',
+//         sub : newUser.id,
+//         iat : new Date().getTime(),
+//         exp : new Date().setDate(new Date().getDate()+1)
+//     },process.env.JWT_SECRET);
+// };
 
 
 newSchema.plugin(passportLocalMongoose);
